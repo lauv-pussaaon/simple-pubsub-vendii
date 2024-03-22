@@ -13,7 +13,12 @@ export class MachineEventPublisher implements IPublishSubscribeService {
         this.subscribers[eventType].add(handler);
     }
 
-    publish(event: IEvent): void {}
+    publish(event: IEvent): void {
+        const subscribers = this.subscribers[event.type()];
+        if (subscribers) {
+            subscribers.forEach((sub) => sub.handle(event));
+        }
+    }
 
     //unsubscribe(eventType: EventType, handler: ISubscriber): void {}
 }

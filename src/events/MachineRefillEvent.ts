@@ -1,3 +1,4 @@
+import { EventType } from "./EventType";
 import { IEvent } from "./IEvent";
 
 export class MachineRefillEvent implements IEvent {
@@ -10,7 +11,7 @@ export class MachineRefillEvent implements IEvent {
         throw new Error("Method not implemented.");
     }
 
-    type(): string {
-        throw new Error("Method not implemented.");
+    type(): EventType {
+        return EventType.REFILL;
     }
 }

@@ -1,3 +1,4 @@
+import { EventType } from "./EventType";
 import { IEvent } from "./IEvent";
 
 export class MachineSaleEvent implements IEvent {
@@ -14,7 +15,7 @@ export class MachineSaleEvent implements IEvent {
         return this._sold;
     }
 
-    type(): string {
-        return "sale";
+    type(): EventType {
+        return EventType.SALE;
     }
 }

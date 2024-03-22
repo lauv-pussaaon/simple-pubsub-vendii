@@ -1,4 +1,6 @@
+import { EventType } from "./EventType";
+
 export interface IEvent {
-    type(): string;
+    type(): EventType;
     machineId(): string;
 }

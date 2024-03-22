@@ -1,8 +1,13 @@
-import { IEvent } from "../events/IEvent";
+import { MachineRefillEvent } from "../events/MachineRefillEvent";
+import { Machine } from "../models/Machine";
 import { ISubscriber } from "./ISubscriber";
 
 export class MachineRefillSubscriber implements ISubscriber {
-    handle(event: IEvent): void {
-        throw new Error("Method not implemented.");
+    public machines: Machine[];
+
+    constructor(machines: Machine[]) {
+        this.machines = machines;
     }
+
+    handle(event: MachineRefillEvent): void {}
 }
