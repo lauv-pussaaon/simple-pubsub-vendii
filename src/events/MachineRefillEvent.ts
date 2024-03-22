@@ -8,7 +8,11 @@ export class MachineRefillEvent implements IEvent {
     ) {}
 
     machineId(): string {
-        throw new Error("Method not implemented.");
+        return this._machineId;
+    }
+
+    getRefillQuantity(): number {
+        return this._refill;
     }
 
     type(): EventType {

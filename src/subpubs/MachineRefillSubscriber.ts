@@ -9,5 +9,10 @@ export class MachineRefillSubscriber implements ISubscriber {
         this.machines = machines;
     }
 
-    handle(event: MachineRefillEvent): void {}
+    handle(event: MachineRefillEvent): void {
+        const machine = this.machines.find((m) => m.id === event.machineId());
+        if (machine) {
+            machine.stockLevel += event.getRefillQuantity();
+        }
+    }
 }
