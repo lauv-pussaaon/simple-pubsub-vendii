@@ -1,7 +1,7 @@
 import type { Config } from "@jest/types";
 
 /** @type {import('ts-jest').JestConfigWithTsJest} */
-const baseTestDir: string = "<rootDir>/test";
+const baseTestDir: string = "<rootDir>/tests";
 
 const config: Config.InitialOptions = {
     preset: "ts-jest",
