@@ -10,6 +10,14 @@ describe("MachineEventPublisher Test Suite", () => {
         const ids = ["001", "002", "003"];
         return ids.map((id) => new Machine(id));
     }
+    const mockMachineSaleSubscriber = {
+        handle: jest.fn(),
+    };
+    const mockMachineRefillSubscriber = {
+        handle: jest.fn(),
+    };
+
+    afterEach(() => jest.clearAllMocks());
 
     describe("Subscriber Registration", () => {
         it("should register a subscriber for a specific event type", () => {
@@ -55,13 +63,6 @@ describe("MachineEventPublisher Test Suite", () => {
 
     describe("Event Publishing", () => {
         it("should notify all subscribers when an event is published", () => {
-            const mockMachineSaleSubscriber = {
-                handle: jest.fn(),
-            };
-            const mockMachineRefillSubscriber = {
-                handle: jest.fn(),
-            };
-
             const machineEventPublisher = new MachineEventPublisher();
             machineEventPublisher.subscribe(
                 EventType.SALE,
@@ -83,13 +84,6 @@ describe("MachineEventPublisher Test Suite", () => {
         });
 
         it("should not notify subscribers of other event types", () => {
-            const mockMachineSaleSubscriber = {
-                handle: jest.fn(),
-            };
-            const mockMachineRefillSubscriber = {
-                handle: jest.fn(),
-            };
-
             const machineEventPublisher = new MachineEventPublisher();
             machineEventPublisher.subscribe(
                 EventType.SALE,
@@ -106,13 +100,6 @@ describe("MachineEventPublisher Test Suite", () => {
 
     describe("Unsubscribing", () => {
         it("should allow a subscriber to unsubscribe from an event type", () => {
-            const mockMachineSaleSubscriber = {
-                handle: jest.fn(),
-            };
-            const mockMachineRefillSubscriber = {
-                handle: jest.fn(),
-            };
-
             const machineEventPublisher = new MachineEventPublisher();
             machineEventPublisher.subscribe(
                 EventType.SALE,
@@ -144,10 +131,6 @@ describe("MachineEventPublisher Test Suite", () => {
         });
 
         it("should not notify a subscriber after they unsubscribe", () => {
-            const mockMachineSaleSubscriber = {
-                handle: jest.fn(),
-            };
-
             const machineEventPublisher = new MachineEventPublisher();
             machineEventPublisher.subscribe(
                 EventType.SALE,
