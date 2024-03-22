@@ -9,5 +9,10 @@ export class MachineSaleSubscriber implements ISubscriber {
         this.machines = machines;
     }
 
-    handle(event: MachineSaleEvent): void {}
+    handle(event: MachineSaleEvent): void {
+        const machine = this.machines.find((m) => m.id === event.machineId());
+        if (machine) {
+            machine.stockLevel -= event.getSoldQuantity();
+        }
+    }
 }
