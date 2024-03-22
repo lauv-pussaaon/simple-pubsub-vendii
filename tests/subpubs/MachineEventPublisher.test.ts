@@ -103,4 +103,68 @@ describe("MachineEventPublisher Test Suite", () => {
             expect(mockMachineRefillSubscriber.handle).toHaveBeenCalledTimes(0);
         });
     });
+
+    describe("Unsubscribing", () => {
+        it("should allow a subscriber to unsubscribe from an event type", () => {
+            const mockMachineSaleSubscriber = {
+                handle: jest.fn(),
+            };
+            const mockMachineRefillSubscriber = {
+                handle: jest.fn(),
+            };
+
+            const machineEventPublisher = new MachineEventPublisher();
+            machineEventPublisher.subscribe(
+                EventType.SALE,
+                mockMachineSaleSubscriber
+            );
+            machineEventPublisher.subscribe(
+                EventType.REFILL,
+                mockMachineRefillSubscriber
+            );
+
+            expect(machineEventPublisher.subscribers[EventType.SALE].size).toBe(
+                1
+            );
+            expect(
+                machineEventPublisher.subscribers[EventType.REFILL].size
+            ).toBe(1);
+
+            machineEventPublisher.unsubscribe(
+                EventType.SALE,
+                mockMachineSaleSubscriber
+            );
+
+            expect(machineEventPublisher.subscribers[EventType.SALE].size).toBe(
+                0
+            );
+            expect(
+                machineEventPublisher.subscribers[EventType.REFILL].size
+            ).toBe(1);
+        });
+
+        it("should not notify a subscriber after they unsubscribe", () => {
+            const mockMachineSaleSubscriber = {
+                handle: jest.fn(),
+            };
+
+            const machineEventPublisher = new MachineEventPublisher();
+            machineEventPublisher.subscribe(
+                EventType.SALE,
+                mockMachineSaleSubscriber
+            );
+
+            const eventSale = new MachineSaleEvent(1, "001");
+            machineEventPublisher.publish(eventSale);
+            machineEventPublisher.publish(eventSale);
+            expect(mockMachineSaleSubscriber.handle).toHaveBeenCalledTimes(2);
+
+            machineEventPublisher.unsubscribe(
+                EventType.SALE,
+                mockMachineSaleSubscriber
+            );
+            machineEventPublisher.publish(eventSale);
+            expect(mockMachineSaleSubscriber.handle).toHaveBeenCalledTimes(2);
+        });
+    });
 });

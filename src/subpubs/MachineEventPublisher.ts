@@ -20,5 +20,7 @@ export class MachineEventPublisher implements IPublishSubscribeService {
         }
     }
 
-    //unsubscribe(eventType: EventType, handler: ISubscriber): void {}
+    unsubscribe(eventType: EventType, handler: ISubscriber): void {
+        this.subscribers[eventType].delete(handler);
+    }
 }
