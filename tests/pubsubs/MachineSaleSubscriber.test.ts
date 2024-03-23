@@ -1,6 +1,7 @@
 import { appConfig } from "../../src/appConfig";
 import { EventType } from "../../src/events/EventType";
 import { MachineSaleEvent } from "../../src/events/MachineSaleEvent";
+import { StockLevelInsufficientEvent } from "../../src/events/StockLevelInsufficientEvent";
 import { StockLevelLowEvent } from "../../src/events/StockLevelLowEvent";
 import { Machine } from "../../src/models/Machine";
 import { MachineSaleSubscriber } from "../../src/pubsubs/MachineSaleSubscriber";
@@ -35,6 +36,57 @@ describe("MachineSaleSubscriber Test Suite", () => {
                 beforeStockLevel - saleEvent.getSoldQuantity()
             );
             expect(machine2.stockLevel).toBe(appConfig.defaultStockLevel);
+        });
+    });
+
+    describe("deductStock Function", () => {
+        it("should decrease the stock level correctly", () => {
+            const machines = mockMachines();
+            const eventEmitter = new EventEmitter();
+            const machineSaleSubscriber = new MachineSaleSubscriber(
+                eventEmitter,
+                machines
+            );
+
+            const machine1 = machines.at(0)!;
+            const beforeStockLevel = machine1.stockLevel;
+            const saleEvent = new MachineSaleEvent(1, machine1.id);
+
+            machineSaleSubscriber.deductStock(
+                saleEvent.getSoldQuantity(),
+                machine1
+            );
+            expect(machine1.stockLevel).toBe(
+                beforeStockLevel - saleEvent.getSoldQuantity()
+            );
+        });
+
+        it("should emit a StockLevelInsufficientEvent when trying to deduct over stock level", () => {
+            const machines = mockMachines();
+            const eventEmitter = new EventEmitter();
+            const machineSaleSubscriber = new MachineSaleSubscriber(
+                eventEmitter,
+                machines
+            );
+            const emitSpy = jest.spyOn(eventEmitter, "emit");
+
+            const machine1 = machines.at(0)!;
+            const beforeStockLevel = machine1.stockLevel;
+            const saleEvent = new MachineSaleEvent(
+                machine1.stockLevel + 1,
+                machine1.id
+            );
+
+            machineSaleSubscriber.deductStock(
+                saleEvent.getSoldQuantity(),
+                machine1
+            );
+            expect(machine1.stockLevel).toBe(beforeStockLevel);
+            expect(emitSpy).toHaveBeenCalledTimes(1);
+            expect(emitSpy).toHaveBeenCalledWith(
+                EventType.STOCK_LEVEL_INSUFFICIENT,
+                new StockLevelInsufficientEvent(machine1.id)
+            );
         });
     });
 
