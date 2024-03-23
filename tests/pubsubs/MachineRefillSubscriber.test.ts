@@ -39,6 +39,29 @@ describe("MachineRefillSubscriber Test Suite", () => {
         });
     });
 
+    describe("refillStock Function", () => {
+        it("should increase the stock level correctly", () => {
+            const machines = mockMachines();
+            const eventEmitter = new EventEmitter();
+            const machineRefillSubscriber = new MachineRefillSubscriber(
+                eventEmitter,
+                machines
+            );
+
+            const machine1 = machines.at(0)!;
+            const beforeStockLevel = machine1.stockLevel;
+            const saleEvent = new MachineRefillEvent(1, machine1.id);
+
+            machineRefillSubscriber.refillStock(
+                saleEvent.getRefillQuantity(),
+                machine1
+            );
+            expect(machine1.stockLevel).toBe(
+                beforeStockLevel + saleEvent.getRefillQuantity()
+            );
+        });
+    });
+
     describe("detechStockLevelOk Function", () => {
         it("should emit a StockLevelOkEvent when a machine stock refilled >= threshold", () => {
             const machines = mockMachines();
