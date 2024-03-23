@@ -59,5 +59,21 @@ describe("MachineSaleSubscriber Test Suite", () => {
                 new StockLevelLowEvent(machine1.id)
             );
         });
+        it("should not emit a StockLevelLowEvent if before stock level is already < threshold", () => {
+            const machines = mockMachines();
+            const eventEmitter = new EventEmitter();
+
+            const machineSaleSubscriber = new MachineSaleSubscriber(
+                eventEmitter,
+                machines
+            );
+            const emitSpy = jest.spyOn(eventEmitter, "emit");
+
+            const machine1 = machines.at(0)!;
+            const beforeLevel = appConfig.stockThreshold - 1;
+            machine1.stockLevel = appConfig.stockThreshold - 2;
+            machineSaleSubscriber.detectLowStockLevel(beforeLevel, machine1);
+            expect(emitSpy).toHaveBeenCalledTimes(0);
+        });
     });
 });

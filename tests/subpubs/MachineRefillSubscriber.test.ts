@@ -1,7 +1,10 @@
 import { appConfig } from "../../src/appConfig";
+import { EventType } from "../../src/events/EventType";
 import { MachineRefillEvent } from "../../src/events/MachineRefillEvent";
+import { StockLevelOkEvent } from "../../src/events/StockLevelOkEvent";
 import { Machine } from "../../src/models/Machine";
 import { MachineRefillSubscriber } from "../../src/subpubs/MachineRefillSubscriber";
+import { EventEmitter } from "events";
 
 describe("MachineRefillSubscriber Test Suite", () => {
     function mockMachines(): Machine[] {
@@ -9,23 +12,69 @@ describe("MachineRefillSubscriber Test Suite", () => {
         return ids.map((id) => new Machine(id, appConfig.defaultStockLevel));
     }
 
-    it("should increase the stock level after refill", () => {
-        const machines = mockMachines();
-        const machineSaleSubscriber = new MachineRefillSubscriber(machines);
+    describe("handle Function", () => {
+        it("should increase the stock level after refill", () => {
+            const machines = mockMachines();
+            const eventEmitter = new EventEmitter();
 
-        const machine1 = machines.at(0)!;
-        const machine2 = machines.at(1)!;
-        const beforeStockLevel = machine1.stockLevel;
+            const machineSaleSubscriber = new MachineRefillSubscriber(
+                eventEmitter,
+                machines
+            );
 
-        expect(machine1.stockLevel).toBe(appConfig.defaultStockLevel);
-        expect(machine2.stockLevel).toBe(appConfig.defaultStockLevel);
+            const machine1 = machines.at(0)!;
+            const machine2 = machines.at(1)!;
+            const beforeStockLevel = machine1.stockLevel;
 
-        const refillEvent = new MachineRefillEvent(5, machine1.id);
-        machineSaleSubscriber.handle(refillEvent);
+            expect(machine1.stockLevel).toBe(appConfig.defaultStockLevel);
+            expect(machine2.stockLevel).toBe(appConfig.defaultStockLevel);
 
-        expect(machine1.stockLevel).toBe(
-            beforeStockLevel + refillEvent.getRefillQuantity()
-        );
-        expect(machine2.stockLevel).toBe(appConfig.defaultStockLevel);
+            const refillEvent = new MachineRefillEvent(5, machine1.id);
+            machineSaleSubscriber.handle(refillEvent);
+
+            expect(machine1.stockLevel).toBe(
+                beforeStockLevel + refillEvent.getRefillQuantity()
+            );
+            expect(machine2.stockLevel).toBe(appConfig.defaultStockLevel);
+        });
+    });
+
+    describe("detechStockLevelOk Function", () => {
+        it("should emit a StockLevelOkEvent when a machine stock refilled >= threshold", () => {
+            const machines = mockMachines();
+            const eventEmitter = new EventEmitter();
+
+            const machineRefillSubscriber = new MachineRefillSubscriber(
+                eventEmitter,
+                machines
+            );
+            const emitSpy = jest.spyOn(eventEmitter, "emit");
+
+            const machine1 = machines.at(0)!;
+            const beforeLevel = appConfig.stockThreshold - 1;
+            machine1.stockLevel = appConfig.stockThreshold;
+            machineRefillSubscriber.detectStockLevelOk(beforeLevel, machine1);
+            expect(emitSpy).toHaveBeenCalledTimes(1);
+            expect(emitSpy).toHaveBeenCalledWith(
+                EventType.STOCK_LEVEL_OK,
+                new StockLevelOkEvent(machine1.id)
+            );
+        });
+        it("should not emit a StockLevelOkEvent if before stock level is >= threshold", () => {
+            const machines = mockMachines();
+            const eventEmitter = new EventEmitter();
+
+            const machineRefillSubscriber = new MachineRefillSubscriber(
+                eventEmitter,
+                machines
+            );
+            const emitSpy = jest.spyOn(eventEmitter, "emit");
+
+            const machine1 = machines.at(0)!;
+            const beforeLevel = appConfig.stockThreshold;
+            machine1.stockLevel = appConfig.stockThreshold + 1;
+            machineRefillSubscriber.detectStockLevelOk(beforeLevel, machine1);
+            expect(emitSpy).toHaveBeenCalledTimes(0);
+        });
     });
 });
