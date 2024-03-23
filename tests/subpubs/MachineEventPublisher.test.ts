@@ -1,10 +1,7 @@
 import { EventType } from "../../src/events/EventType";
 import { MachineRefillEvent } from "../../src/events/MachineRefillEvent";
 import { MachineSaleEvent } from "../../src/events/MachineSaleEvent";
-import { Machine } from "../../src/models/Machine";
 import { MachineEventPublisher } from "../../src/subpubs/MachineEventPublisher";
-import { MachineSaleSubscriber } from "../../src/subpubs/MachineSaleSubscriber";
-import { EventEmitter } from "events";
 
 describe("MachineEventPublisher Test Suite", () => {
     const mockMachineSaleSubscriber = {
@@ -16,7 +13,7 @@ describe("MachineEventPublisher Test Suite", () => {
 
     afterEach(() => jest.clearAllMocks());
 
-    describe("Subscriber Registration", () => {
+    describe("subscribe Function", () => {
         it("should register a subscriber for a specific event type", () => {
             const machineEventPublisher = new MachineEventPublisher();
 
@@ -52,7 +49,7 @@ describe("MachineEventPublisher Test Suite", () => {
         });
     });
 
-    describe("Event Publishing", () => {
+    describe("publish Function", () => {
         it("should notify all subscribers when an event is published", () => {
             const machineEventPublisher = new MachineEventPublisher();
             machineEventPublisher.subscribe(
@@ -89,7 +86,7 @@ describe("MachineEventPublisher Test Suite", () => {
         });
     });
 
-    describe("Unsubscribing", () => {
+    describe("unsubscribe Function", () => {
         it("should allow a subscriber to unsubscribe from an event type", () => {
             const machineEventPublisher = new MachineEventPublisher();
             machineEventPublisher.subscribe(

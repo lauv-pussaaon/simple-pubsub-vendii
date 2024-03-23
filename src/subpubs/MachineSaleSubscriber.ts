@@ -1,3 +1,4 @@
+import { appConfig } from "../appConfig";
 import { EventType } from "../events/EventType";
 import { MachineSaleEvent } from "../events/MachineSaleEvent";
 import { StockLevelLowEvent } from "../events/StockLevelLowEvent";
@@ -12,20 +13,23 @@ export class MachineSaleSubscriber implements ISubscriber {
     ) {}
 
     handle(event: MachineSaleEvent): void {
-        const stockThreshold: number = 3;
         const machine = this.machines.find((m) => m.id === event.machineId());
         if (machine) {
             const beforeStockLevel = machine.stockLevel;
             machine.stockLevel -= event.getSoldQuantity();
-            if (
-                beforeStockLevel >= stockThreshold &&
-                machine.stockLevel < stockThreshold
-            ) {
-                this.eventEmitter.emit(
-                    EventType.STOCK_LEVEL_LOW,
-                    new StockLevelLowEvent(machine.id)
-                );
-            }
+            this.detectLowStockLevel(beforeStockLevel, machine);
+        }
+    }
+
+    detectLowStockLevel(beforeStockLevel: number, machine: Machine): void {
+        if (
+            beforeStockLevel >= appConfig.stockThreshold &&
+            machine.stockLevel < appConfig.stockThreshold
+        ) {
+            this.eventEmitter.emit(
+                EventType.STOCK_LEVEL_LOW,
+                new StockLevelLowEvent(machine.id)
+            );
         }
     }
 }

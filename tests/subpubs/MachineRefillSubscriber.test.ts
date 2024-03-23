@@ -1,13 +1,12 @@
+import { appConfig } from "../../src/appConfig";
 import { MachineRefillEvent } from "../../src/events/MachineRefillEvent";
 import { Machine } from "../../src/models/Machine";
 import { MachineRefillSubscriber } from "../../src/subpubs/MachineRefillSubscriber";
 
 describe("MachineRefillSubscriber Test Suite", () => {
-    const DEFAULT_STOCK_LEVEL = 20;
-
     function mockMachines(): Machine[] {
         const ids = ["001", "002", "003"];
-        return ids.map((id) => new Machine(id, DEFAULT_STOCK_LEVEL));
+        return ids.map((id) => new Machine(id, appConfig.defaultStockLevel));
     }
 
     it("should increase the stock level after refill", () => {
@@ -18,8 +17,8 @@ describe("MachineRefillSubscriber Test Suite", () => {
         const machine2 = machines.at(1)!;
         const beforeStockLevel = machine1.stockLevel;
 
-        expect(machine1.stockLevel).toBe(DEFAULT_STOCK_LEVEL);
-        expect(machine2.stockLevel).toBe(DEFAULT_STOCK_LEVEL);
+        expect(machine1.stockLevel).toBe(appConfig.defaultStockLevel);
+        expect(machine2.stockLevel).toBe(appConfig.defaultStockLevel);
 
         const refillEvent = new MachineRefillEvent(5, machine1.id);
         machineSaleSubscriber.handle(refillEvent);
@@ -27,6 +26,6 @@ describe("MachineRefillSubscriber Test Suite", () => {
         expect(machine1.stockLevel).toBe(
             beforeStockLevel + refillEvent.getRefillQuantity()
         );
-        expect(machine2.stockLevel).toBe(DEFAULT_STOCK_LEVEL);
+        expect(machine2.stockLevel).toBe(appConfig.defaultStockLevel);
     });
 });
