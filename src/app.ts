@@ -2,6 +2,7 @@ import { Machine } from "./models/Machine";
 import { IPublishSubscribeService } from "./subpubs/IPublishSubscribeService";
 import { MachineSaleSubscriber } from "./subpubs/MachineSaleSubscriber";
 import { generateRandomEvent } from "./utils/helpers";
+import { EventEmitter } from "events";
 
 // program
 (async () => {
@@ -13,7 +14,8 @@ import { generateRandomEvent } from "./utils/helpers";
     ];
 
     // create a machine sale event subscriber. inject the machines (all subscribers should do this)
-    const saleSubscriber = new MachineSaleSubscriber(machines);
+    const eventEmitter = new EventEmitter();
+    const saleSubscriber = new MachineSaleSubscriber(eventEmitter, machines);
 
     // create the PubSub service
     const pubSubService: IPublishSubscribeService =

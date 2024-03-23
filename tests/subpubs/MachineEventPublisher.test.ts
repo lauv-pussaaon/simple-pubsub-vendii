@@ -4,12 +4,9 @@ import { MachineSaleEvent } from "../../src/events/MachineSaleEvent";
 import { Machine } from "../../src/models/Machine";
 import { MachineEventPublisher } from "../../src/subpubs/MachineEventPublisher";
 import { MachineSaleSubscriber } from "../../src/subpubs/MachineSaleSubscriber";
+import { EventEmitter } from "events";
 
 describe("MachineEventPublisher Test Suite", () => {
-    function mockMachines(): Machine[] {
-        const ids = ["001", "002", "003"];
-        return ids.map((id) => new Machine(id));
-    }
     const mockMachineSaleSubscriber = {
         handle: jest.fn(),
     };
@@ -23,14 +20,11 @@ describe("MachineEventPublisher Test Suite", () => {
         it("should register a subscriber for a specific event type", () => {
             const machineEventPublisher = new MachineEventPublisher();
 
-            const machines = mockMachines();
-            const machineSaleSubscriber = new MachineSaleSubscriber(machines);
-
             expect(machineEventPublisher.subscribers).toEqual({});
 
             machineEventPublisher.subscribe(
                 EventType.SALE,
-                machineSaleSubscriber
+                mockMachineSaleSubscriber
             );
 
             expect(machineEventPublisher.subscribers[EventType.SALE].size).toBe(
@@ -41,18 +35,15 @@ describe("MachineEventPublisher Test Suite", () => {
         it("should not register duplicated subscribers twice", () => {
             const machineEventPublisher = new MachineEventPublisher();
 
-            const machines = mockMachines();
-            const machineSaleSubscriber = new MachineSaleSubscriber(machines);
-
             expect(machineEventPublisher.subscribers).toEqual({});
 
             machineEventPublisher.subscribe(
                 EventType.SALE,
-                machineSaleSubscriber
+                mockMachineSaleSubscriber
             );
             machineEventPublisher.subscribe(
                 EventType.SALE,
-                machineSaleSubscriber
+                mockMachineSaleSubscriber
             );
 
             expect(machineEventPublisher.subscribers[EventType.SALE].size).toBe(
