@@ -1,7 +1,7 @@
 import { EventType } from "../../src/events/EventType";
 import { MachineRefillEvent } from "../../src/events/MachineRefillEvent";
 import { MachineSaleEvent } from "../../src/events/MachineSaleEvent";
-import { MachineEventPublisher } from "../../src/subpubs/MachineEventPublisher";
+import { MachineEventPublisher } from "../../src/pubsubs/MachineEventPublisher";
 
 describe("MachineEventPublisher Test Suite", () => {
     const mockMachineSaleSubscriber = {

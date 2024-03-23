@@ -1,6 +1,6 @@
 import { Machine } from "./models/Machine";
-import { IPublishSubscribeService } from "./subpubs/IPublishSubscribeService";
-import { MachineSaleSubscriber } from "./subpubs/MachineSaleSubscriber";
+import { IPublishSubscribeService } from "./pubsubs/IPublishSubscribeService";
+import { MachineSaleSubscriber } from "./pubsubs/MachineSaleSubscriber";
 import { generateRandomEvent } from "./utils/helpers";
 import { EventEmitter } from "events";
 

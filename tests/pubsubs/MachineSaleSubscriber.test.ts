@@ -3,7 +3,7 @@ import { EventType } from "../../src/events/EventType";
 import { MachineSaleEvent } from "../../src/events/MachineSaleEvent";
 import { StockLevelLowEvent } from "../../src/events/StockLevelLowEvent";
 import { Machine } from "../../src/models/Machine";
-import { MachineSaleSubscriber } from "../../src/subpubs/MachineSaleSubscriber";
+import { MachineSaleSubscriber } from "../../src/pubsubs/MachineSaleSubscriber";
 import { EventEmitter } from "events";
 
 describe("MachineSaleSubscriber Test Suite", () => {

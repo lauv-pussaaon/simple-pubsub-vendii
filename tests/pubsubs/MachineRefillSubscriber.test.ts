@@ -3,7 +3,7 @@ import { EventType } from "../../src/events/EventType";
 import { MachineRefillEvent } from "../../src/events/MachineRefillEvent";
 import { StockLevelOkEvent } from "../../src/events/StockLevelOkEvent";
 import { Machine } from "../../src/models/Machine";
-import { MachineRefillSubscriber } from "../../src/subpubs/MachineRefillSubscriber";
+import { MachineRefillSubscriber } from "../../src/pubsubs/MachineRefillSubscriber";
 import { EventEmitter } from "events";
 
 describe("MachineRefillSubscriber Test Suite", () => {
