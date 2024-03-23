@@ -14,6 +14,25 @@ describe("MachineReposity Test Suite", () => {
 
         expect(machineRepository.getMachines()).toEqual(machines);
     });
-    it("should get machine by id correctly", () => {});
-    it("can add a new machine to the repository", () => {});
+    it("should get machine by id correctly", () => {
+        const machines = mockMachines();
+        const machineRepository = new MachineRepository(machines);
+
+        const resultMachine = machineRepository.getMachineById(
+            machines.at(0)!.id
+        );
+
+        expect(resultMachine).toEqual(machines.at(0));
+    });
+    it("can add a new machine to the repository", () => {
+        const machines = mockMachines();
+        const machineRepository = new MachineRepository(machines);
+
+        const newMachine = new Machine("007", 7);
+        machineRepository.addMachine(newMachine);
+
+        const resultMachine = machineRepository.getMachineById(newMachine.id);
+        expect(resultMachine).toEqual(newMachine);
+        expect(resultMachine?.stockLevel).toEqual(newMachine.stockLevel);
+    });
 });
