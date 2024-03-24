@@ -5,21 +5,18 @@ import { StockLevelOkEvent } from "../../src/events/StockLevelOkEvent";
 import { Machine } from "../../src/models/Machine";
 import { MachineRefillSubscriber } from "../../src/pubsubs/MachineRefillSubscriber";
 import { EventEmitter } from "events";
+import { mockMachineRepository } from "../../test-helpers/mockHelpers";
 
 describe("MachineRefillSubscriber Test Suite", () => {
-    function mockMachines(): Machine[] {
-        const ids = ["001", "002", "003"];
-        return ids.map((id) => new Machine(id, appConfig.defaultStockLevel));
-    }
-
     describe("handle Function", () => {
         it("should increase the stock level after refill", () => {
-            const machines = mockMachines();
+            const machinesRepository = mockMachineRepository();
+            const machines = machinesRepository.getMachines().orElse([])!;
             const eventEmitter = new EventEmitter();
 
             const machineSaleSubscriber = new MachineRefillSubscriber(
                 eventEmitter,
-                machines
+                machinesRepository
             );
 
             const machine1 = machines.at(0)!;
@@ -41,11 +38,12 @@ describe("MachineRefillSubscriber Test Suite", () => {
 
     describe("refillStock Function", () => {
         it("should increase the stock level correctly", () => {
-            const machines = mockMachines();
+            const machinesRepository = mockMachineRepository();
+            const machines = machinesRepository.getMachines().orElse([])!;
             const eventEmitter = new EventEmitter();
             const machineRefillSubscriber = new MachineRefillSubscriber(
                 eventEmitter,
-                machines
+                machinesRepository
             );
 
             const machine1 = machines.at(0)!;
@@ -64,12 +62,13 @@ describe("MachineRefillSubscriber Test Suite", () => {
 
     describe("detechStockLevelOk Function", () => {
         it("should emit a StockLevelOkEvent when a machine stock refilled >= threshold", () => {
-            const machines = mockMachines();
+            const machinesRepository = mockMachineRepository();
+            const machines = machinesRepository.getMachines().orElse([])!;
             const eventEmitter = new EventEmitter();
 
             const machineRefillSubscriber = new MachineRefillSubscriber(
                 eventEmitter,
-                machines
+                machinesRepository
             );
             const emitSpy = jest.spyOn(eventEmitter, "emit");
 
@@ -84,12 +83,13 @@ describe("MachineRefillSubscriber Test Suite", () => {
             );
         });
         it("should not emit a StockLevelOkEvent if before stock level is >= threshold", () => {
-            const machines = mockMachines();
+            const machinesRepository = mockMachineRepository();
+            const machines = machinesRepository.getMachines().orElse([])!;
             const eventEmitter = new EventEmitter();
 
             const machineRefillSubscriber = new MachineRefillSubscriber(
                 eventEmitter,
-                machines
+                machinesRepository
             );
             const emitSpy = jest.spyOn(eventEmitter, "emit");
 

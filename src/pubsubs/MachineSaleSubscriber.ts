@@ -3,6 +3,7 @@ import { EventType } from "../events/EventType";
 import { MachineSaleEvent } from "../events/MachineSaleEvent";
 import { StockLevelInsufficientEvent } from "../events/StockLevelInsufficientEvent";
 import { StockLevelLowEvent } from "../events/StockLevelLowEvent";
+import { IMachineRepository } from "../models/IMachineRepository";
 import { Machine } from "../models/Machine";
 import { ISubscriber } from "./ISubscriber";
 import { EventEmitter } from "events";
@@ -10,16 +11,17 @@ import { EventEmitter } from "events";
 export class MachineSaleSubscriber implements ISubscriber {
     constructor(
         private eventEmitter: EventEmitter,
-        private machines: Machine[]
+        private machinesRepository: IMachineRepository
     ) {}
 
     handle(event: MachineSaleEvent): void {
-        const machine = this.machines.find((m) => m.id === event.machineId());
-        if (machine) {
-            const beforeStockLevel = machine.stockLevel;
-            this.deductStock(event.getSoldQuantity(), machine);
-            this.detectLowStockLevel(beforeStockLevel, machine);
-        }
+        this.machinesRepository
+            .getMachineById(event.machineId())
+            .map((machine) => {
+                const beforeStockLevel = machine.stockLevel;
+                this.deductStock(event.getSoldQuantity(), machine);
+                this.detectLowStockLevel(beforeStockLevel, machine);
+            });
     }
 
     deductStock(soldQuantity: number, machine: Machine) {
