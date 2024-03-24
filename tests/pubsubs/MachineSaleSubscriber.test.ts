@@ -9,6 +9,8 @@ import { EventEmitter } from "events";
 import { mockMachineRepository } from "../../test-helpers/mockHelpers";
 
 describe("MachineSaleSubscriber Test Suite", () => {
+    afterEach(() => jest.clearAllMocks());
+
     describe("handle Function", () => {
         it("should decrease the stock level after sell", () => {
             const machinesRepository = mockMachineRepository();

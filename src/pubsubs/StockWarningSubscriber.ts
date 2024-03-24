@@ -16,8 +16,10 @@ export class StockWarningSubscriber implements ISubscriber {
                         this.handleStockLevelLow(machine);
                         break;
                     case EventType.STOCK_LEVEL_INSUFFICIENT:
+                        this.handleStockInsufficient(machine);
                         break;
                     case EventType.STOCK_LEVEL_OK:
+                        this.handleStockLevelOk(machine);
                         break;
                 }
             });
@@ -26,6 +28,18 @@ export class StockWarningSubscriber implements ISubscriber {
     handleStockLevelLow(machine: Machine) {
         console.log(
             `Stock level low warning from machine #${machine.id} - current level is ${machine.stockLevel}`
+        );
+    }
+
+    handleStockInsufficient(machine: Machine) {
+        console.log(
+            `Stock level insufficient from machine #${machine.id} - current level is ${machine.stockLevel}`
+        );
+    }
+
+    handleStockLevelOk(machine: Machine) {
+        console.log(
+            `Stock level ok from machine #${machine.id} - current level is ${machine.stockLevel}`
         );
     }
 }
