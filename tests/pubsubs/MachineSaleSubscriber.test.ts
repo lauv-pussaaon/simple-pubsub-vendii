@@ -3,7 +3,6 @@ import { EventType } from "../../src/events/EventType";
 import { MachineSaleEvent } from "../../src/events/MachineSaleEvent";
 import { StockLevelInsufficientEvent } from "../../src/events/StockLevelInsufficientEvent";
 import { StockLevelLowEvent } from "../../src/events/StockLevelLowEvent";
-import { Machine } from "../../src/models/Machine";
 import { MachineSaleSubscriber } from "../../src/pubsubs/MachineSaleSubscriber";
 import { EventEmitter } from "events";
 import { mockMachineRepository } from "../../test-helpers/mockHelpers";
@@ -13,13 +12,13 @@ describe("MachineSaleSubscriber Test Suite", () => {
 
     describe("handle Function", () => {
         it("should decrease the stock level after sell", () => {
-            const machinesRepository = mockMachineRepository();
-            const machines = machinesRepository.getMachines().orElse([])!;
+            const machineRepository = mockMachineRepository();
+            const machines = machineRepository.getMachines().orElse([])!;
             const eventEmitter = new EventEmitter();
 
             const machineSaleSubscriber = new MachineSaleSubscriber(
                 eventEmitter,
-                machinesRepository
+                machineRepository
             );
 
             const machine1 = machines.at(0)!;
@@ -41,13 +40,13 @@ describe("MachineSaleSubscriber Test Suite", () => {
 
     describe("deductStock Function", () => {
         it("should decrease the stock level correctly", () => {
-            const machinesRepository = mockMachineRepository();
-            const machines = machinesRepository.getMachines().orElse([])!;
+            const machineRepository = mockMachineRepository();
+            const machines = machineRepository.getMachines().orElse([])!;
             const eventEmitter = new EventEmitter();
 
             const machineSaleSubscriber = new MachineSaleSubscriber(
                 eventEmitter,
-                machinesRepository
+                machineRepository
             );
 
             const machine1 = machines.at(0)!;
@@ -64,13 +63,13 @@ describe("MachineSaleSubscriber Test Suite", () => {
         });
 
         it("should emit a StockLevelInsufficientEvent when trying to deduct over stock level", () => {
-            const machinesRepository = mockMachineRepository();
-            const machines = machinesRepository.getMachines().orElse([])!;
+            const machineRepository = mockMachineRepository();
+            const machines = machineRepository.getMachines().orElse([])!;
             const eventEmitter = new EventEmitter();
 
             const machineSaleSubscriber = new MachineSaleSubscriber(
                 eventEmitter,
-                machinesRepository
+                machineRepository
             );
             const emitSpy = jest.spyOn(eventEmitter, "emit");
 
@@ -96,13 +95,13 @@ describe("MachineSaleSubscriber Test Suite", () => {
 
     describe("detechLowStockLevel Function", () => {
         it("should emit a StockLevelLowEvent when a machine stock drops below threshold", () => {
-            const machinesRepository = mockMachineRepository();
-            const machines = machinesRepository.getMachines().orElse([])!;
+            const machineRepository = mockMachineRepository();
+            const machines = machineRepository.getMachines().orElse([])!;
             const eventEmitter = new EventEmitter();
 
             const machineSaleSubscriber = new MachineSaleSubscriber(
                 eventEmitter,
-                machinesRepository
+                machineRepository
             );
             const emitSpy = jest.spyOn(eventEmitter, "emit");
 
@@ -117,13 +116,13 @@ describe("MachineSaleSubscriber Test Suite", () => {
             );
         });
         it("should not emit a StockLevelLowEvent if before stock level is already < threshold", () => {
-            const machinesRepository = mockMachineRepository();
-            const machines = machinesRepository.getMachines().orElse([])!;
+            const machineRepository = mockMachineRepository();
+            const machines = machineRepository.getMachines().orElse([])!;
             const eventEmitter = new EventEmitter();
 
             const machineSaleSubscriber = new MachineSaleSubscriber(
                 eventEmitter,
-                machinesRepository
+                machineRepository
             );
             const emitSpy = jest.spyOn(eventEmitter, "emit");
 

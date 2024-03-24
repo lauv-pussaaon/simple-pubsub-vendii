@@ -11,11 +11,11 @@ import { EventEmitter } from "events";
 export class MachineSaleSubscriber implements ISubscriber {
     constructor(
         private eventEmitter: EventEmitter,
-        private machinesRepository: IMachineRepository
+        private machineRepository: IMachineRepository
     ) {}
 
     handle(event: MachineSaleEvent): void {
-        this.machinesRepository
+        this.machineRepository
             .getMachineById(event.machineId())
             .map((machine) => {
                 const beforeStockLevel = machine.stockLevel;

@@ -92,8 +92,8 @@ describe("MachineEventPublisher Test Suite", () => {
         });
 
         it("should publish stock level warnings from emitted events", () => {
-            const machinesRepository = mockMachineRepository();
-            const machines = machinesRepository.getMachines().orElse([])!;
+            const machineRepository = mockMachineRepository();
+            const machines = machineRepository.getMachines().orElse([])!;
             const machine1 = machines.at(0)!;
             const stockWarningSubscriber = new StockWarningSubscriber(
                 mockMachineRepository()

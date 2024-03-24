@@ -5,10 +5,10 @@ import { Machine } from "../models/Machine";
 import { ISubscriber } from "./ISubscriber";
 
 export class StockWarningSubscriber implements ISubscriber {
-    constructor(private machinesRepository: IMachineRepository) {}
+    constructor(private machineRepository: IMachineRepository) {}
 
     handle(event: IEvent): void {
-        this.machinesRepository
+        this.machineRepository
             .getMachineById(event.machineId())
             .map((machine) => {
                 switch (event.type()) {
