@@ -5,34 +5,46 @@ import { StockLevelInsufficientEvent } from "../events/StockLevelInsufficientEve
 import { StockLevelLowEvent } from "../events/StockLevelLowEvent";
 import { IMachineRepository } from "../models/IMachineRepository";
 import { Machine } from "../models/Machine";
+import { IMachineStockHandler } from "../services/IMachineStockHandler";
 import { ISubscriber } from "./ISubscriber";
 import { EventEmitter } from "events";
 
 export class MachineSaleSubscriber implements ISubscriber {
     constructor(
         private eventEmitter: EventEmitter,
-        private machineRepository: IMachineRepository
+        private machineRepository: IMachineRepository,
+        private machineStockHandler: IMachineStockHandler
     ) {}
 
     handle(event: MachineSaleEvent): void {
         this.machineRepository
             .getMachineById(event.machineId())
             .map((machine) => {
-                const beforeStockLevel = machine.stockLevel;
-                this.deductStock(event.getSoldQuantity(), machine);
-                this.detectLowStockLevel(beforeStockLevel, machine);
+                const isStockInsufficient = this.detectInsufficientStock(
+                    event.getSoldQuantity(),
+                    machine
+                );
+
+                if (!isStockInsufficient) {
+                    const beforeStockLevel = machine.stockLevel;
+                    this.machineStockHandler.deductStock(
+                        event.getSoldQuantity(),
+                        machine
+                    );
+                    this.detectLowStockLevel(beforeStockLevel, machine);
+                }
             });
     }
 
-    deductStock(soldQuantity: number, machine: Machine) {
+    detectInsufficientStock(soldQuantity: number, machine: Machine): boolean {
         if (soldQuantity > machine.stockLevel) {
             this.eventEmitter.emit(
                 EventType.STOCK_LEVEL_INSUFFICIENT,
                 new StockLevelInsufficientEvent(machine.id)
             );
-            return;
+            return true;
         }
-        machine.stockLevel -= soldQuantity;
+        return false;
     }
 
     detectLowStockLevel(beforeStockLevel: number, machine: Machine): void {

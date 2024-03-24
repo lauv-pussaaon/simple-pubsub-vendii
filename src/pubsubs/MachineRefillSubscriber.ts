@@ -4,25 +4,30 @@ import { MachineRefillEvent } from "../events/MachineRefillEvent";
 import { StockLevelOkEvent } from "../events/StockLevelOkEvent";
 import { IMachineRepository } from "../models/IMachineRepository";
 import { Machine } from "../models/Machine";
+import { IMachineStockHandler } from "../services/IMachineStockHandler";
 import { ISubscriber } from "./ISubscriber";
 import { EventEmitter } from "events";
 
 export class MachineRefillSubscriber implements ISubscriber {
     constructor(
         private eventEmitter: EventEmitter,
-        private machinesRepository: IMachineRepository
+        private machinesRepository: IMachineRepository,
+        private machineStockHandler: IMachineStockHandler
     ) {}
 
     handle(event: MachineRefillEvent): void {
         this.machinesRepository
             .getMachineById(event.machineId())
-            .map((machine) =>
-                this.refillStock(event.getRefillQuantity(), machine)
-            );
-    }
+            .map((machine) => {
+                const beforeStockLevel = machine.stockLevel;
 
-    refillStock(refillQuantity: number, machine: Machine) {
-        machine.stockLevel += refillQuantity;
+                this.machineStockHandler.refillStock(
+                    event.getRefillQuantity(),
+                    machine
+                );
+
+                this.detectStockLevelOk(beforeStockLevel, machine);
+            });
     }
 
     detectStockLevelOk(beforeLevel: number, machine: Machine) {

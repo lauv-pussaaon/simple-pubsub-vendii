@@ -8,6 +8,7 @@ import { MachineEventPublisher } from "../../src/pubsubs/MachineEventPublisher";
 import { EventEmitter } from "events";
 import { StockWarningSubscriber } from "../../src/pubsubs/StockWarningSubscriber";
 import { mockMachineRepository } from "../../test-helpers/mockHelpers";
+import { MachineStockHandler } from "../../src/services/MachineStockHandler";
 
 describe("MachineEventPublisher Test Suite", () => {
     const mockMachineSaleSubscriber = {
@@ -95,21 +96,23 @@ describe("MachineEventPublisher Test Suite", () => {
             const machineRepository = mockMachineRepository();
             const machines = machineRepository.getMachines().orElse([])!;
             const machine1 = machines.at(0)!;
+            const machineStockHandler = new MachineStockHandler();
             const stockWarningSubscriber = new StockWarningSubscriber(
-                mockMachineRepository()
+                mockMachineRepository(),
+                machineStockHandler
             );
 
             const handleSpy = jest.spyOn(stockWarningSubscriber, "handle");
             const handleStockLevelLowSpy = jest.spyOn(
-                stockWarningSubscriber,
+                machineStockHandler,
                 "handleStockLevelLow"
             );
             const handleStockInsufficientSpy = jest.spyOn(
-                stockWarningSubscriber,
+                machineStockHandler,
                 "handleStockInsufficient"
             );
             const handleStockLevelOkSpy = jest.spyOn(
-                stockWarningSubscriber,
+                machineStockHandler,
                 "handleStockLevelOk"
             );
 

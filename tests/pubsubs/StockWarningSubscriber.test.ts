@@ -2,6 +2,7 @@ import { StockLevelInsufficientEvent } from "../../src/events/StockLevelInsuffic
 import { StockLevelLowEvent } from "../../src/events/StockLevelLowEvent";
 import { StockLevelOkEvent } from "../../src/events/StockLevelOkEvent";
 import { StockWarningSubscriber } from "../../src/pubsubs/StockWarningSubscriber";
+import { MachineStockHandler } from "../../src/services/MachineStockHandler";
 import { mockMachineRepository } from "../../test-helpers/mockHelpers";
 
 describe("StockWarningSubscriber Test Suite", () => {
@@ -11,10 +12,14 @@ describe("StockWarningSubscriber Test Suite", () => {
         const machineRepository = mockMachineRepository();
         const machines = machineRepository.getMachines().orElse([])!;
         const testMachine = machines.at(0)!;
+        const machineStockHandler = new MachineStockHandler();
 
-        const stockWarningSub = new StockWarningSubscriber(machineRepository);
+        const stockWarningSub = new StockWarningSubscriber(
+            machineRepository,
+            machineStockHandler
+        );
         const handleEventSpy = jest.spyOn(
-            stockWarningSub,
+            machineStockHandler,
             "handleStockLevelLow"
         );
 
@@ -29,10 +34,14 @@ describe("StockWarningSubscriber Test Suite", () => {
         const machineRepository = mockMachineRepository();
         const machines = machineRepository.getMachines().orElse([])!;
         const testMachine = machines.at(0)!;
+        const machineStockHandler = new MachineStockHandler();
 
-        const stockWarningSub = new StockWarningSubscriber(machineRepository);
+        const stockWarningSub = new StockWarningSubscriber(
+            machineRepository,
+            machineStockHandler
+        );
         const handleEventSpy = jest.spyOn(
-            stockWarningSub,
+            machineStockHandler,
             "handleStockInsufficient"
         );
 
@@ -47,10 +56,14 @@ describe("StockWarningSubscriber Test Suite", () => {
         const machineRepository = mockMachineRepository();
         const machines = machineRepository.getMachines().orElse([])!;
         const testMachine = machines.at(0)!;
+        const machineStockHandler = new MachineStockHandler();
 
-        const stockWarningSub = new StockWarningSubscriber(machineRepository);
+        const stockWarningSub = new StockWarningSubscriber(
+            machineRepository,
+            machineStockHandler
+        );
         const handleEventSpy = jest.spyOn(
-            stockWarningSub,
+            machineStockHandler,
             "handleStockLevelOk"
         );
 

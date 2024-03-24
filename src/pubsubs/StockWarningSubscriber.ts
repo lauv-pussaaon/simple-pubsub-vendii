@@ -2,10 +2,14 @@ import { EventType } from "../events/EventType";
 import { IEvent } from "../events/IEvent";
 import { IMachineRepository } from "../models/IMachineRepository";
 import { Machine } from "../models/Machine";
+import { IMachineStockHandler } from "../services/IMachineStockHandler";
 import { ISubscriber } from "./ISubscriber";
 
 export class StockWarningSubscriber implements ISubscriber {
-    constructor(private machineRepository: IMachineRepository) {}
+    constructor(
+        private machineRepository: IMachineRepository,
+        private machineStockHandler: IMachineStockHandler
+    ) {}
 
     handle(event: IEvent): void {
         this.machineRepository
@@ -13,33 +17,17 @@ export class StockWarningSubscriber implements ISubscriber {
             .map((machine) => {
                 switch (event.type()) {
                     case EventType.STOCK_LEVEL_LOW:
-                        this.handleStockLevelLow(machine);
+                        this.machineStockHandler.handleStockLevelLow(machine);
                         break;
                     case EventType.STOCK_LEVEL_INSUFFICIENT:
-                        this.handleStockInsufficient(machine);
+                        this.machineStockHandler.handleStockInsufficient(
+                            machine
+                        );
                         break;
                     case EventType.STOCK_LEVEL_OK:
-                        this.handleStockLevelOk(machine);
+                        this.machineStockHandler.handleStockLevelOk(machine);
                         break;
                 }
             });
-    }
-
-    handleStockLevelLow(machine: Machine) {
-        console.log(
-            `Stock level low warning from machine #${machine.id} - current level is ${machine.stockLevel}`
-        );
-    }
-
-    handleStockInsufficient(machine: Machine) {
-        console.log(
-            `Stock level insufficient from machine #${machine.id} - current level is ${machine.stockLevel}`
-        );
-    }
-
-    handleStockLevelOk(machine: Machine) {
-        console.log(
-            `Stock level ok from machine #${machine.id} - current level is ${machine.stockLevel}`
-        );
     }
 }

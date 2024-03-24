@@ -6,6 +6,7 @@ import { Machine } from "../../src/models/Machine";
 import { MachineRefillSubscriber } from "../../src/pubsubs/MachineRefillSubscriber";
 import { EventEmitter } from "events";
 import { mockMachineRepository } from "../../test-helpers/mockHelpers";
+import { MachineStockHandler } from "../../src/services/MachineStockHandler";
 
 describe("MachineRefillSubscriber Test Suite", () => {
     afterEach(() => jest.clearAllMocks());
@@ -15,10 +16,12 @@ describe("MachineRefillSubscriber Test Suite", () => {
             const machineRepository = mockMachineRepository();
             const machines = machineRepository.getMachines().orElse([])!;
             const eventEmitter = new EventEmitter();
+            const machineStockHandler = new MachineStockHandler();
 
             const machineSaleSubscriber = new MachineRefillSubscriber(
                 eventEmitter,
-                machineRepository
+                machineRepository,
+                machineStockHandler
             );
 
             const machine1 = machines.at(0)!;
@@ -36,28 +39,26 @@ describe("MachineRefillSubscriber Test Suite", () => {
             );
             expect(machine2.stockLevel).toBe(appConfig.defaultStockLevel);
         });
-    });
 
-    describe("refillStock Function", () => {
         it("should increase the stock level correctly", () => {
             const machineRepository = mockMachineRepository();
             const machines = machineRepository.getMachines().orElse([])!;
             const eventEmitter = new EventEmitter();
+            const machineStockHandler = new MachineStockHandler();
+
             const machineRefillSubscriber = new MachineRefillSubscriber(
                 eventEmitter,
-                machineRepository
+                machineRepository,
+                machineStockHandler
             );
 
             const machine1 = machines.at(0)!;
             const beforeStockLevel = machine1.stockLevel;
-            const saleEvent = new MachineRefillEvent(1, machine1.id);
+            const refillEvent = new MachineRefillEvent(1, machine1.id);
 
-            machineRefillSubscriber.refillStock(
-                saleEvent.getRefillQuantity(),
-                machine1
-            );
+            machineRefillSubscriber.handle(refillEvent);
             expect(machine1.stockLevel).toBe(
-                beforeStockLevel + saleEvent.getRefillQuantity()
+                beforeStockLevel + refillEvent.getRefillQuantity()
             );
         });
     });
@@ -67,10 +68,12 @@ describe("MachineRefillSubscriber Test Suite", () => {
             const machineRepository = mockMachineRepository();
             const machines = machineRepository.getMachines().orElse([])!;
             const eventEmitter = new EventEmitter();
+            const machineStockHandler = new MachineStockHandler();
 
             const machineRefillSubscriber = new MachineRefillSubscriber(
                 eventEmitter,
-                machineRepository
+                machineRepository,
+                machineStockHandler
             );
             const emitSpy = jest.spyOn(eventEmitter, "emit");
 
@@ -88,10 +91,12 @@ describe("MachineRefillSubscriber Test Suite", () => {
             const machineRepository = mockMachineRepository();
             const machines = machineRepository.getMachines().orElse([])!;
             const eventEmitter = new EventEmitter();
+            const machineStockHandler = new MachineStockHandler();
 
             const machineRefillSubscriber = new MachineRefillSubscriber(
                 eventEmitter,
-                machineRepository
+                machineRepository,
+                machineStockHandler
             );
             const emitSpy = jest.spyOn(eventEmitter, "emit");
 
